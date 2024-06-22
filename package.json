@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "build:ignore-errors": "IGNORE_ERRORS=true next build"
+
   },
   "dependencies": {
     "@canvasjs/react-charts": "^1.0.2",
