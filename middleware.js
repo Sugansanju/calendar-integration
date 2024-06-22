@@ -7,6 +7,10 @@ const Middleware = (req) => {
   let NEXT_TOKEN = process.env.NEXT_PUBLIC_ACCESS_TOKEN;
   const cookieData = req.cookies.get(NEXT_TOKEN);
   const pathName = req.nextUrl.pathname;
+  console.log("===PathName===",pathName);
+  if (pathName === '/favicon.ico') {
+    return NextResponse.next();
+  }
 
   if (pathName.toLowerCase() === "/login") {
     if (cookieData && cookieData?.value) {
