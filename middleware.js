@@ -7,13 +7,12 @@ const Middleware = (req) => {
   let NEXT_TOKEN = process.env.NEXT_PUBLIC_ACCESS_TOKEN;
   const cookieData = req.cookies.get(NEXT_TOKEN);
   const pathName = req.nextUrl.pathname;
-  console.log("===PathName===",pathName);
   if (pathName === '/favicon.ico') {
     return NextResponse.next();
   }
 
   if (pathName.toLowerCase() === "/login") {
-    if (cookieData && cookieData?.value) {
+    if (cookieData?.value) {
       return NextResponse.redirect("http://localhost:3000");
     }
   }
@@ -22,7 +21,7 @@ const Middleware = (req) => {
     pathName.toLowerCase().includes("dashboardx") ||
     pathName.toLowerCase() == "/"
   ) {
-    if (cookieData && cookieData?.value) {
+    if (cookieData?.value) {
       const decoded = jwtDecode(cookieData?.value);
       let beginningTime = moment(Date.now()).format("DD-MM-YYYY hh:mm:ss");
       let endTime = moment.unix(decoded.exp).format("DD-MM-YYYY hh:mm:ss");
