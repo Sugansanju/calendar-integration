@@ -8,7 +8,21 @@ const EditEventModal = ({ show, handleClose, event, handleSave ,position}) => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showDetailModal, setDetailModal] = useState(false);
   const modalRef = useRef(null);
-
+  
+  const formatEventTime = (start, end) => {
+    const formatTime = (dateString, options) => {
+      const date = new Date(dateString);
+      return new Intl.DateTimeFormat('en-US', options).format(date);
+    };
+  
+    const hourOptions = { hour: 'numeric' };
+    const hourWithPeriodOptions = { hour: 'numeric', hour12: true };
+  
+    const startHour = formatTime(start, hourOptions);
+    const endHourWithPeriod = formatTime(end, hourWithPeriodOptions);
+  
+    return `${startHour} - ${endHourWithPeriod}`;
+  };
 
   const handleClickOutside = (e:any) => {
     console.log("==HandleClickOutSide==",modalRef.current,"==",e.target)
@@ -51,7 +65,7 @@ const EditEventModal = ({ show, handleClose, event, handleSave ,position}) => {
             <ul>
                <li className="text-[12px] py-1">{item?.job_id?.jobRequest_Role}</li>
                <li className="text-[12px] py-1">Interviewer: {item?.job_id?.jobRequest_createdBy.username}</li>
-               <li className="text-[12px] py-1">Time : {moment(item?.start).format('hh')}-{moment(item?.end).format('hh a')}</li>
+               <li className="text-[12px] py-1">Time : {formatEventTime(item?.start,item?.end)}</li>
              </ul>
         </div>
        ))} 

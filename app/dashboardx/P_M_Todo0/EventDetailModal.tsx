@@ -54,7 +54,21 @@ const EventDetailModal = ({ show, handleDetailClose, event, handleSave ,position
     link.click();
     document.body.removeChild(link);
   };
-
+   const formatEventTime = (start, end) => {
+    const formatTime = (dateString, options) => {
+      const date = new Date(dateString);
+      return new Intl.DateTimeFormat('en-US', options).format(date);
+    };
+  
+    const hourOptions = { hour: 'numeric' };
+    const hourWithPeriodOptions = { hour: 'numeric', hour12: true };
+  
+    const startHour = formatTime(start, hourOptions);
+    console.log("==StartHour",startHour)
+    const endHourWithPeriod = formatTime(end, hourWithPeriodOptions);
+  
+    return `${startHour} - ${endHourWithPeriod}`;
+  };
   const handleAadharDownload = () => {
     const fileUrl = event?.user_det.candidate.candidate_resume;    
     const link = document.createElement('a');
@@ -74,7 +88,7 @@ const EventDetailModal = ({ show, handleDetailClose, event, handleSave ,position
             <h3 className="details">Position: {event?.job_id.jobRequest_Role}</h3>
             <h3 className="details">Created By: {event?.user_det.handled_by.firstName}</h3>
             <h3 className="details">Interview Date:{interviewDate} {moment(event?.start).format("MMM YYYY")}</h3>
-            <h3 className="details">Interview Time: {moment(event?.start).format('hh')}-{moment(event?.end).format('hh a')}</h3>
+            <h3 className="details">Interview Time: {formatEventTime(event?.start,event?.end)}</h3>
             <h3 className="details">Interview Via: {event?.link!=''?'Google Meet':'Offline'}</h3>
             <button className="button-details" onClick={handleResumeDownload}>
                 <div className="">

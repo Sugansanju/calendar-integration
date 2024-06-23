@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { format, parse, startOfWeek, getDay, parseISO } from "date-fns";
 import { enUS } from "date-fns/locale";
@@ -149,6 +149,7 @@ export default function P_M_Todo0() {
   const handleMonthChange = (e: {
     target: { value: React.SetStateAction<string> };
   }) => {
+    console.log("===",e.target.value)
     setSelectedMonth(e.target.value);
   };
 
@@ -184,38 +185,18 @@ export default function P_M_Todo0() {
     setPosition({ x: e.clientX, y: e.clientY });
   };
 
-  const handleSave = (editedEvent) => {
+  const handleSave = (editedEvent:any) => {
     console.log("Saving edited event:", editedEvent);
     setShowEditModal(false);
   };
 
   const handleClose = () => setShowEditModal(false);
 
-  const handleNavigate = (action) => {
-    let newDate;
-      if (action === 'TODAY') {
-        newDate = new Date();
-      } else if (action === 'PREV') {
-        newDate = new Date(currentDate);
-      if (currentView === 'month') {
-        newDate.setMonth(newDate.getMonth() - 1);
-      } else if (currentView === 'week') {
-        newDate.setDate(newDate.getDate() - 7);
-      } else if (currentView === 'day') {
-        newDate.setDate(newDate.getDate() - 1);
-      }
-    } else if (action === 'NEXT') {
-      newDate = new Date(currentDate);
-      if (currentView === 'month') {
-        newDate.setMonth(newDate.getMonth() + 1);
-      } else if (currentView === 'week') {
-        newDate.setDate(newDate.getDate() + 7);
-      } else if (currentView === 'day') {
-        newDate.setDate(newDate.getDate() + 1);
-      }
-    }
-    setCurrentDate(newDate);
-  };
+  // const handleNavigate = (action:any) => {
+  //   console.log("==Handle navigate==",action)
+  //   const formattedDate = action.toISOString().substring(0, 10).replace(/-/g, "-");
+  //   setTodayDate(formattedDate);
+  // };
 
   const EventDetailModal = () => {
     return (
@@ -241,7 +222,20 @@ export default function P_M_Todo0() {
       </>
     );
   };
-
+  const formatEventTime = (start, end) => {
+    const formatTime = (dateString, options) => {
+      const date = new Date(dateString);
+      return new Intl.DateTimeFormat('en-US', options).format(date);
+    };
+  
+    const hourOptions = { hour: 'numeric' };
+    const hourWithPeriodOptions = { hour: 'numeric', hour12: true };
+  
+    const startHour = formatTime(start, hourOptions);
+    const endHourWithPeriod = formatTime(end, hourWithPeriodOptions);
+  
+    return `${startHour} - ${endHourWithPeriod}`;
+  };
   // Custom Event Component
   const CustomEvent = ({ event }: any) => {
     console.log("==Events",event)
@@ -270,7 +264,7 @@ export default function P_M_Todo0() {
                   <ul>
                     <li className="text-[12px] py-1">{event?.job_id?.jobRequest_Role}</li>
                     <li className="text-[12px] py-1">Interviewer:{event?.job_id?.jobRequest_createdBy.username} </li>
-                    <li className="text-[12px] py-1">Time :{moment(event?.start).format('hh')} - {moment(event?.end).format('hh a')}</li>
+                    <li className="text-[12px] py-1">Time :{formatEventTime(event?.start,event?.end)}</li>
                   </ul>
                 </div>
             </div>
@@ -278,11 +272,20 @@ export default function P_M_Todo0() {
       </>
     );
   };
+  const onPrevClick = useCallback(() => {
+    if (currentView === 'day') {
+      setCurrentDate(moment(currentDate).subtract(1, "d").toDate());
+    } else if (currentView === 'week') {
+      setCurrentDate(moment(currentDate).subtract(1, "w").toDate());
+    } else {
+      setCurrentDate(moment(currentDate).subtract(1, "M").toDate());
+    }
+  }, [currentView, currentDate]);
   const CustomToolbar = ({ label, onNavigate, onView, views }) => {
     return (
       <div className="rbc-toolbar">
         <span className="rbc-btn-group">
-          <button type="button" onClick={() => onNavigate('PREV')}>
+          <button type="button" onClick={onPrevClick}>
             Back
           </button>
           <button type="button" onClick={() => onNavigate('TODAY')}>
@@ -378,8 +381,8 @@ export default function P_M_Todo0() {
                   selectable
                   localizer={localizer}
                   events={events}
-                  startAccessor="start"
-                  endAccessor="end"
+                  // startAccessor="start"
+                  // endAccessor="end"
                   style={{ height: 600,}}
                   defaultView={"week"}
                   timeslots={5} // number of per section
@@ -393,7 +396,7 @@ export default function P_M_Todo0() {
                   }}
                   onSelectSlot={handleSelectSlot}
                   onSelectEvent={handleSelect}
-                  onNavigate={handleNavigate}
+                  onNavigate={setCurrentDate}
                 />
               </div>
             </div>

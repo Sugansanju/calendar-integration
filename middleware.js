@@ -1,53 +1,47 @@
-import { NextResponse } from 'next/server';
-import {jwtDecode} from 'jwt-decode'; // Correct default import
-import moment from 'moment';
-import { parseDateString } from '@/utils';
+import { NextResponse } from "next/server";
+import { jwtDecode } from "jwt-decode";
+import moment from "moment";
+import { parseDateString } from "@/utils";
 
 const Middleware = (req) => {
-  const NEXT_TOKEN = process.env.NEXT_PUBLIC_ACCESS_TOKEN;
-  const cookieData = req.cookies.get(NEXT_TOKEN);
+  let NEXT_TOKEN = process.env.NEXT_PUBLIC_ACCESS_TOKEN;
+  const cookieData = req.cookies?.get(NEXT_TOKEN);
   const pathName = req.nextUrl.pathname;
-
-  console.log("Next_Token:", NEXT_TOKEN);
-  console.log("cookieData:", cookieData);
-  console.log("Path Name:", pathName);
-
-  // Handle favicon request
+  console.log("Next_Token",process.env.NEXT_PUBLIC_ACCESS_TOKEN);
+  console.log("cookieData",req.cookies?.get(NEXT_TOKEN));
+  console.log("Path Name",req.nextUrl.pathname);
+  console.log("Cookie ",cookieData?.value)
   if (pathName === '/favicon.ico') {
     return NextResponse.next();
   }
 
-  // Redirect to home if user is already logged in and trying to access login
-  if (pathName.toLowerCase() === '/login') {
-    if (cookieData) {
-      return NextResponse.redirect('http://localhost:3000');
+  if (pathName.toLowerCase() === "/login") {
+    if (cookieData?.value) {
+      return NextResponse.redirect("http://localhost:3000");
     }
   }
 
-  // Protect dashboard and home route
-  if (pathName.toLowerCase().includes('dashboardx') || pathName.toLowerCase() === '/') {
-    if (cookieData) {
-      try {
-        const decoded = jwtDecode(cookieData);
-        const currentTime = moment().unix();
-        const tokenExpirationTime = decoded.exp;
-
-        if (tokenExpirationTime < currentTime) {
-          req.cookies.delete(NEXT_TOKEN);
-          return NextResponse.redirect('http://localhost:3000/login');
-        } else {
-          return NextResponse.next();
-        }
-      } catch (error) {
-        console.error('Token decoding error:', error);
-        req.cookies.delete(NEXT_TOKEN);
-        return NextResponse.redirect('http://localhost:3000/login');
+  if (
+    pathName.toLowerCase().includes("dashboardx") ||
+    pathName.toLowerCase() == "/"
+  ) {
+    console.log("==Cookie===",cookieData)
+    if (cookieData?.value) {
+      const decoded = jwtDecode(cookieData?.value);
+      let beginningTime = moment(Date.now()).format("DD-MM-YYYY hh:mm:ss");
+      let endTime = moment.unix(decoded.exp).format("DD-MM-YYYY hh:mm:ss");
+      let parsedBeginningTime = parseDateString(beginningTime);
+      let parsedEndTime = parseDateString(endTime);
+      if (decoded && parsedBeginningTime > parsedEndTime) {
+        req.cookies.has(NEXT_TOKEN) && req.cookies.delete(NEXT_TOKEN);
+        return NextResponse.redirect("http://localhost:3000" + "/login");
+      } else {
+        return NextResponse.next();
       }
     } else {
-      return NextResponse.redirect('http://localhost:3000/login');
+      return NextResponse.redirect("http://localhost:3000" + "/login");
     }
   }
-
   return NextResponse.next();
 };
 
