@@ -4,9 +4,9 @@ import moment from "moment";
 import { parseDateString } from "@/utils";
 
 const Middleware = (req) => {
-  // let NEXT_TOKEN = process.env.NEXT_PUBLIC_ACCESS_TOKEN;
-  // const cookieData = req.cookies.get(NEXT_TOKEN);
-  // const pathName = req.nextUrl.pathname;
+  let NEXT_TOKEN = process.env.NEXT_PUBLIC_ACCESS_TOKEN;
+  const cookieData = req.cookies.get(NEXT_TOKEN);
+  const pathName = req.nextUrl.pathname;
   // if (pathName === '/favicon.ico') {
   //   return NextResponse.next();
   // }
