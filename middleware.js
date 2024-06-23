@@ -24,46 +24,52 @@ function runMiddleware(req, res, fn) {
 }
 
 const Middleware = async (req) => {
-  // Run the CORS middleware
-  await runMiddleware(req, res, cors);
+  try {
+    // Run the CORS middleware
+    await runMiddleware(req, res, cors);
 
-  let NEXT_TOKEN = "ta_access_token";
-  console.log("====", NEXT_TOKEN);
-  const cookieData = req.cookies.get(NEXT_TOKEN);
-  const pathName = req.nextUrl.pathname;
-  console.log("--Pathname---", pathName);
-  if (pathName === '/favicon.ico') {
-    return NextResponse.next();
-  }
+    let NEXT_TOKEN = "ta_access_token";
+    console.log("====", NEXT_TOKEN);
+    const cookieData = req.cookies.get(NEXT_TOKEN);
+    const pathName = req.nextUrl.pathname;
+    console.log("--Pathname---", pathName);
 
-  if (pathName.toLowerCase() === "/login") {
-    console.log("==If===");
-    if (cookieData?.value) {
-      return NextResponse.redirect("https://calendar-integration-001.vercel.app");
+    if (pathName === '/favicon.ico') {
+      return NextResponse.next();
     }
-  }
 
-  if (
-    pathName.toLowerCase().includes("dashboardx") ||
-    pathName.toLowerCase() == "/"
-  ) {
-    if (cookieData?.value) {
-      const decoded = jwtDecode(cookieData?.value);
-      let beginningTime = moment(Date.now()).format("DD-MM-YYYY hh:mm:ss");
-      let endTime = moment.unix(decoded.exp).format("DD-MM-YYYY hh:mm:ss");
-      let parsedBeginningTime = parseDateString(beginningTime);
-      let parsedEndTime = parseDateString(endTime);
-      if (decoded && parsedBeginningTime > parsedEndTime) {
-        req.cookies.has(NEXT_TOKEN) && req.cookies.delete(NEXT_TOKEN);
-        return NextResponse.redirect("https://calendar-integration-001.vercel.app" + "/login");
-      } else {
-        return NextResponse.next();
+    if (pathName.toLowerCase() === "/login") {
+      console.log("==If===");
+      if (cookieData?.value) {
+        return NextResponse.redirect("https://calendar-integration-001.vercel.app");
       }
-    } else {
-      return NextResponse.redirect("https://calendar-integration-001.vercel.app" + "/login");
     }
+
+    if (
+      pathName.toLowerCase().includes("dashboardx") ||
+      pathName.toLowerCase() == "/"
+    ) {
+      if (cookieData?.value) {
+        const decoded = jwtDecode(cookieData?.value);
+        let beginningTime = moment(Date.now()).format("DD-MM-YYYY hh:mm:ss");
+        let endTime = moment.unix(decoded.exp).format("DD-MM-YYYY hh:mm:ss");
+        let parsedBeginningTime = parseDateString(beginningTime);
+        let parsedEndTime = parseDateString(endTime);
+        if (decoded && parsedBeginningTime > parsedEndTime) {
+          req.cookies.has(NEXT_TOKEN) && req.cookies.delete(NEXT_TOKEN);
+          return NextResponse.redirect("https://calendar-integration-001.vercel.app/login");
+        } else {
+          return NextResponse.next();
+        }
+      } else {
+        return NextResponse.redirect("https://calendar-integration-001.vercel.app/login");
+      }
+    }
+    return NextResponse.next();
+  } catch (error) {
+    console.error("Middleware error:", error);
+    return new NextResponse("Internal Server Error", { status: 500 });
   }
-  return NextResponse.next();
 };
 
 export default Middleware;
