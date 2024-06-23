@@ -4,7 +4,7 @@ import moment from "moment";
 import { parseDateString } from "@/utils";
 
 const Middleware = (req) => {
-  let NEXT_TOKEN = process.env.NEXT_PUBLIC_ACCESS_TOKEN;
+  let NEXT_TOKEN ="ta_access_token";
   console.log("====",NEXT_TOKEN)
   const cookieData = req.cookies.get(NEXT_TOKEN);
   const pathName = req.nextUrl.pathname;
