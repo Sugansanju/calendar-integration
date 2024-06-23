@@ -149,7 +149,7 @@ export default function P_M_Todo0() {
   const handleMonthChange = (e: {
     target: { value: React.SetStateAction<string> };
   }) => {
-    console.log("===",e.target.value)
+    console.log("===",e.target)
     setSelectedMonth(e.target.value);
   };
 
@@ -281,7 +281,19 @@ export default function P_M_Todo0() {
       setCurrentDate(moment(currentDate).subtract(1, "M").toDate());
     }
   }, [currentView, currentDate]);
-  const CustomToolbar = ({ label, onNavigate, onView, views }) => {
+  const CustomToolbar = ({ label, onNavigate, onView, views , date, setCurrentDate}) => {
+    const handleMonthChange = (e:any) => {
+      const newDate = new Date(date.getFullYear(), e.target.value - 1, 1);
+      setCurrentDate(newDate);
+      onNavigate(newDate);
+    };
+  
+    const handleYearChange = (e:any) => {
+      const newDate = new Date(e.target.value, date.getMonth(), 1);
+      setCurrentDate(newDate);
+      onNavigate(newDate);
+    };
+  
     return (
       <div className="rbc-toolbar">
         <span className="rbc-btn-group">

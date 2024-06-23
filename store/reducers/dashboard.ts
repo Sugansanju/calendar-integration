@@ -20,6 +20,7 @@ import {
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 import Cookies from "js-cookie"; // Import the js-cookie library
+import { useRouter } from "next/router";
 
 // Helper function to handle common async thunk logic
 const createAsyncThunkHandler = (apiFunction, propName, onLoginSuccess?) =>
@@ -92,8 +93,10 @@ export const getHirings = createAsyncThunkHandler(
 export const userlogin = createAsyncThunkHandler(
   LOGIN_API,
   "login",
-  (response) => {
+  (response:any) => {
     console.log("==Login===",response)
+    // useRouter().push("/dashboardx/P_M_Todos0");
+
     // Assuming response contains session information such as user data, access token, etc.
     const { access_token, user_email, user_id, refresh_token } = response;
     // Store user data and access token in cookies
@@ -102,6 +105,8 @@ export const userlogin = createAsyncThunkHandler(
       ACCESS_TOKEN,
       JSON.stringify({ access_token, user_email, user_id, refresh_token })
     );
+    window.location.href = 'dashboardx/P_M_Todo0';
+   
   }
 );
 
