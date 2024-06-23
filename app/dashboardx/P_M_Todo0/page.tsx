@@ -33,10 +33,6 @@ const localizer = dateFnsLocalizer({
 export default function P_M_Todo0() {
 
   const dispatch = useDispatch()
-
-
-
-
   const myEventsList = [
     {
       title: "Event 1",
@@ -50,14 +46,14 @@ export default function P_M_Todo0() {
   const [activeEventModal, setActiveEventModal] = useState();
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [events, setEvents] = useState(myEventsList);
-  const [currentView, setCurrentView] = useState('month');
+  const [currentView, setCurrentView] = useState('week');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [allEvents,setAllEvents]=useState([]);
 
   const fromDate="2024-06-04";
-  const toDate="2024-06-30";
+  const toDate="2025-06-30";
   useEffect(() => {
     getTodayMeetingDetailsList();
   },[])
@@ -146,17 +142,28 @@ export default function P_M_Todo0() {
   ];
 
   // Handle month and year changes
-  const handleMonthChange = (e: {
-    target: { value: React.SetStateAction<string> };
-  }) => {
-    console.log("===",e.target)
-    setSelectedMonth(e.target.value);
-  };
+  const handleMonthChange = (e) => {
+    const selectedMonthValue = e.target.value;
+    setSelectedMonth(selectedMonthValue);
 
-  const handleYearChange = (e: {
-    target: { value: React.SetStateAction<string> };
-  }) => {
-    setSelectedYear(e.target.value);
+    // Adjust currentDate based on the selected month
+    const newDate = moment(currentDate)
+      .set("month", parseInt(selectedMonthValue) - 1) // Set the month (zero-indexed in Moment.js)
+      .toDate();
+
+    setCurrentDate(newDate); // Update currentDate state
+    setCurrentView("month"); // Optionally set the view to 'month'
+  };
+  const handleYearChange = (e:any) => {
+    const selectedYearValue = e.target.value;
+    setSelectedYear(selectedYearValue);
+
+    // Adjust currentDate based on the selected year
+    const newDate = moment(currentDate)
+      .set("year", parseInt(selectedYearValue)) // Set the year
+      .toDate();
+
+    setCurrentDate(newDate); // Update currentDate state
   };
 
 
@@ -272,6 +279,8 @@ export default function P_M_Todo0() {
       </>
     );
   };
+  
+
   const onPrevClick = useCallback(() => {
     if (currentView === 'day') {
       setCurrentDate(moment(currentDate).subtract(1, "d").toDate());
@@ -281,6 +290,7 @@ export default function P_M_Todo0() {
       setCurrentDate(moment(currentDate).subtract(1, "M").toDate());
     }
   }, [currentView, currentDate]);
+  
   const CustomToolbar = ({ label, onNavigate, onView, views , date, setCurrentDate}) => {
     const handleMonthChange = (e:any) => {
       const newDate = new Date(date.getFullYear(), e.target.value - 1, 1);
@@ -310,17 +320,17 @@ export default function P_M_Todo0() {
         <span className="rbc-toolbar-label">{label}</span>
         <span className="rbc-btn-group">
           {views.includes('month') && (
-            <button type="button" onClick={() => onView('month')}>
+            <button type="button" onClick={() => onView('month')} className={currentView === 'month' ? 'active'  : ''}>
               Month
             </button>
           )}
           {views.includes('week') && (
-            <button type="button" onClick={() => onView('week')}>
+            <button type="button" onClick={() => onView('week')} className={currentView === 'week' ? 'active'  : ''}>
               Week
             </button>
           )}
           {views.includes('day') && (
-            <button type="button" onClick={() => onView('day')}>
+            <button type="button" onClick={() => onView('day')} className={currentView === 'day' ? 'active'  : ''}>
               Day
             </button>
           )}
@@ -396,7 +406,7 @@ export default function P_M_Todo0() {
                   // startAccessor="start"
                   // endAccessor="end"
                   style={{ height: 600,}}
-                  defaultView={"week"}
+                  // defaultView={"week"}
                   timeslots={5} // number of per section
                   step={30}
                   view={currentView}
