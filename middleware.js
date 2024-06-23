@@ -6,17 +6,17 @@ import { parseDateString } from "@/utils";
 const Middleware = (req) => {
   let NEXT_TOKEN = process.env.NEXT_PUBLIC_ACCESS_TOKEN;
   console.log("====",NEXT_TOKEN)
-  // const cookieData = req.cookies.get(NEXT_TOKEN);
-  // const pathName = req.nextUrl.pathname;
-  // if (pathName === '/favicon.ico') {
-  //   return NextResponse.next();
-  // }
+  const cookieData = req.cookies.get(NEXT_TOKEN);
+  const pathName = req.nextUrl.pathname;
+  if (pathName === '/favicon.ico') {
+    return NextResponse.next();
+  }
 
-  // if (pathName.toLowerCase() === "/login") {
-  //   if (cookieData?.value) {
-  //     return NextResponse.redirect("http://localhost:3000");
-  //   }
-  // }
+  if (pathName.toLowerCase() === "/login") {
+    if (cookieData?.value) {
+      return NextResponse.redirect("http://localhost:3000");
+    }
+  }
 
   // if (
   //   pathName.toLowerCase().includes("dashboardx") ||
