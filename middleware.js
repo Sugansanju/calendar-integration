@@ -8,12 +8,14 @@ const Middleware = (req) => {
   console.log("====",NEXT_TOKEN)
   const cookieData = req.cookies.get(NEXT_TOKEN);
   const pathName = req.nextUrl.pathname;
+  console.log("--Pathname---",pathName)
   if (pathName === '/favicon.ico') {
     return NextResponse.next();
   }
 
   if (pathName.toLowerCase() === "/login") {
-    if (cookieData!=undefined) {
+    console.log("==If===")
+    if (cookieData?.value) {
       return NextResponse.redirect("http://localhost:3000");
     }
   }
