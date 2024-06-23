@@ -41,8 +41,6 @@ const Middleware = (req) => {
     }
   }
   return NextResponse.next();
-  // }
-  // return NextResponse.next();
 };
 
 export default Middleware;
