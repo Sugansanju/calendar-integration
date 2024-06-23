@@ -5,16 +5,13 @@ import { parseDateString } from "@/utils";
 
 const Middleware = (req) => {
   let NEXT_TOKEN ="ta_access_token";
-  console.log("====",NEXT_TOKEN)
   const cookieData = req.cookies.get(NEXT_TOKEN);
   const pathName = req.nextUrl.pathname;
-  console.log("--Pathname---",pathName)
   if (pathName === '/favicon.ico') {
     return NextResponse.next();
   }
 
   if (pathName.toLowerCase() === "/login") {
-    console.log("==If===")
     if (cookieData?.value) {
       // return NextResponse.redirect("http://localhost:3000");
       return NextResponse.redirect("https://calendar-integration-001.vercel.app");

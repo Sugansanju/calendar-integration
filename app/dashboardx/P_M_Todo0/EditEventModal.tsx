@@ -25,7 +25,6 @@ const EditEventModal = ({ show, handleClose, event, handleSave ,position}) => {
   };
 
   const handleClickOutside = (e:any) => {
-    console.log("==HandleClickOutSide==",modalRef.current,"==",e.target)
     if (modalRef.current && !modalRef.current.contains(e.target)) {
       handleClose();
     }
@@ -44,13 +43,11 @@ const EditEventModal = ({ show, handleClose, event, handleSave ,position}) => {
   }, [show]);
 
   const getEventDetail=(id:any)=>{
-    console.log("Event id==>",id)
     axios.get(`${BASE_URL}/calendar_app/api/calendar_meeting?id=${id}`)
     .then((res)=>{
         setSelectedEvent(res.data);
         setDetailModal(true);
         handleClose();
-        console.log("Event Details",res.data)
     })
     .catch((err)=>{
 

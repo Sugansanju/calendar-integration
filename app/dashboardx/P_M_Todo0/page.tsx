@@ -17,6 +17,7 @@ import SideMenu from "@/app/dashboard/component/SideMenu";
 import "react-big-calendar/lib/css/react-big-calendar.css"; // Import the calendar styles
 import { BASE_URL } from "@/constants/ENVIRONMENT_VARIABLES";
 import EditEventModal from "./EditEventModal";
+import { getMeetings } from "@/store/reducers/dashboard";
 
 const locales = {
   "en-US": enUS,
@@ -33,19 +34,12 @@ const localizer = dateFnsLocalizer({
 export default function P_M_Todo0() {
 
   const dispatch = useDispatch()
-  const myEventsList = [
-    {
-      title: "Event 1",
-      start: new Date(),
-      end: new Date(new Date().setHours(new Date().getHours() + 1)),
-    },
-  ];
-  console.log("MyEventsList===",myEventsList)
+
   const [selectedMonth, setSelectedMonth] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
   const [activeEventModal, setActiveEventModal] = useState();
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [events, setEvents] = useState(myEventsList);
+  const [events, setEvents] = useState([]);
   const [currentView, setCurrentView] = useState('week');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -55,27 +49,53 @@ export default function P_M_Todo0() {
   const fromDate="2024-06-04";
   const toDate="2025-06-30";
   useEffect(() => {
-    getTodayMeetingDetailsList();
-  },[])
-  // const getTodayMeetingDetailsList=()=>{
-  //   axios.get(`${BASE_URL}/calendar_app/api/calendar?from_date=${fromDate}&to_date=${toDate}`)
-  //   .then((res)=>{
-  //     console.log("==Meeting Details===",res.data);
-  //     setEvents(res.data);
-  //   })
-  //   .catch((err)=>{
+    console.log("CurrentDate===>",currentDate,currentView)
+    if(currentView=='month'){
+      let { startDate, endDate } = getMonthStartEndDate(currentDate);
+      getMeetingDetails(startDate,endDate);
+    }else if(currentView=='week'){
+      let {startDate,endDate}=getWeekStartEndDate(currentDate);
+      getMeetingDetails(startDate,endDate);
+    }else{
+      console.log("==Other  views")
+    }
+   
+  },[currentDate,currentView])
+  const getMonthStartEndDate=(currentDate:any)=>{
+    let dateValue = new Date(currentDate);
+    let year = dateValue.getFullYear();
+    let month = dateValue.getMonth();
 
-  //   })
-  // }
-  const getTodayMeetingDetailsList = async () => {
+    let startDate = new Date(year, month, 1).toISOString().slice(0, 10);
+
+    // Calculate the last day of the current month
+    let endDate = new Date(year, month + 1, 0).toISOString().slice(0, 10);
+  
+  return { startDate: startDate, endDate: endDate };
+  };
+  const getWeekStartEndDate=(currentDate:any)=>{
+        let dateValue = new Date(currentDate);
+  
+        // Get the starting date of the current week (Sunday)
+        let startDate = new Date(dateValue);
+        startDate.setDate(dateValue.getDate() - dateValue.getDay());
+  
+        let endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + 6);
+
+        // Format dates as YYYY-MM-DD
+        let formattedStartDate = startDate.toISOString().slice(0, 10);
+        let formattedEndDate = endDate.toISOString().slice(0, 10);
+        return { startDate: formattedStartDate, endDate: formattedEndDate };
+
+  };
+  const getMeetingDetails = async (startDate:any,endDate:any) => {
     try {
       const response = await axios.get(
-        `${BASE_URL}/calendar_app/api/calendar?from_date=${fromDate}&to_date=${toDate}`
+        `${BASE_URL}calendar_app/api/calendar?from_date=${startDate}&to_date=${endDate}`
       );
-      console.log("===Response===",response.data)
       setAllEvents(response.data);
       const uniqueEventDates = removeDuplicateEventsByDate(response.data);   
-      console.log("===UniqueEventDates===",uniqueEventDates)
    
       let events = uniqueEventDates.map((event: { title: any; start: string | number | Date; end: string | number | Date; }) => (
         {
@@ -83,7 +103,6 @@ export default function P_M_Todo0() {
         start: formatDate(event.start), // Ensure date strings are converted to Date objects
         end: formatDate(event.end),
       }));
-      console.log("==Events==",events);
       setEvents(events);
     } catch (error) {
       console.error("Error fetching events", error);
@@ -113,7 +132,6 @@ export default function P_M_Todo0() {
 
   const formatDate =(dateString:any) =>{
     const date = new Date(dateString);
-    console.log("Format date",date)
     return date;
   
   }
@@ -178,14 +196,11 @@ export default function P_M_Todo0() {
   };
 
   const handleSelect = (event: any, e: { clientX: any; clientY: any; }) => {
-    console.log("Handle Select called",e.clientX,e.clientY)
     const { start, end } = event;
     setActiveEventModal(event);
      const filteredEvents = allEvents.filter(event => {
-      console.log("==event==",event)
       return formatDate(event.start).getTime() === start.getTime();
     });
-    console.log("filtered Events==>",filteredEvents)
     event=filteredEvents;
     setSelectedEvent(event);
     setShowEditModal(true);
@@ -193,17 +208,10 @@ export default function P_M_Todo0() {
   };
 
   const handleSave = (editedEvent:any) => {
-    console.log("Saving edited event:", editedEvent);
     setShowEditModal(false);
   };
 
   const handleClose = () => setShowEditModal(false);
-
-  // const handleNavigate = (action:any) => {
-  //   console.log("==Handle navigate==",action)
-  //   const formattedDate = action.toISOString().substring(0, 10).replace(/-/g, "-");
-  //   setTodayDate(formattedDate);
-  // };
 
   const EventDetailModal = () => {
     return (
@@ -245,7 +253,6 @@ export default function P_M_Todo0() {
   };
   // Custom Event Component
   const CustomEvent = ({ event }: any) => {
-    console.log("==Events",event)
     return (
       <>
           <div>     
@@ -291,19 +298,7 @@ export default function P_M_Todo0() {
     }
   }, [currentView, currentDate]);
   
-  const CustomToolbar = ({ label, onNavigate, onView, views , date, setCurrentDate}) => {
-    const handleMonthChange = (e:any) => {
-      const newDate = new Date(date.getFullYear(), e.target.value - 1, 1);
-      setCurrentDate(newDate);
-      onNavigate(newDate);
-    };
-  
-    const handleYearChange = (e:any) => {
-      const newDate = new Date(e.target.value, date.getMonth(), 1);
-      setCurrentDate(newDate);
-      onNavigate(newDate);
-    };
-  
+  const CustomToolbar = ({ label, onNavigate, onView, views }) => {
     return (
       <div className="rbc-toolbar">
         <span className="rbc-btn-group">
@@ -436,19 +431,3 @@ export default function P_M_Todo0() {
     </section>
   );
 }
-
-// const CustomEvent = (event:any) => {
-//   console.log(event,"sadfsdfsd")
-//   return (
-//     <span> <strong> {event.title} </strong> </span>
-//   )
-// }
-// Custom Toolbar Component
-const CustomToolbar = ({ label }: any) => {
-  return (
-    <div className="custom-toolbar ">
-      <strong>{label}</strong>
-      {/* Add custom buttons or components here */}
-    </div>
-  );
-};

@@ -6,13 +6,11 @@ const makeRequest = async (endpoint, data, method = "post") => {
     let response = await AXIOS_CLIENT[method](endpoint, data);
 
     let result = await response?.data;
-    console.log("==result===",result,"===",endpoint);
     if (result) {
       console.warn(`--=${endpoint}===`, result);
       return result;
     }
   } catch (error) {
-    console.log(endpoint.toUpperCase() + ": ", error.message);
     throw new Error(`${endpoint}: ${error.message}`);
   }
 };

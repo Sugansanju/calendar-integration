@@ -30,7 +30,6 @@ function Login() {
             return
         }
       let val=  dispatch(userlogin(user));
-      console.log("User value=",val);
     }
 
     const handleChange = (event) => {

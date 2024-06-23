@@ -11,7 +11,6 @@ const EventDetailModal = ({ show, handleDetailClose, event, handleSave ,position
 
 
   const handleClickOutside = (e:any) => {
-    console.log("==HandleClickOutSide==",modalRef.current,"==",e.target)
     if (modalRef.current && !modalRef.current.contains(e.target)) {
       handleDetailClose();
     }
@@ -28,7 +27,6 @@ const EventDetailModal = ({ show, handleDetailClose, event, handleSave ,position
     }
   };
   useEffect(() => {
-    console.log("UseEffect==>",event)
     let date=moment(event?.start);
    setInterviewDate(addOrdinalSuffix(date.date()));
     if (show) {
@@ -64,7 +62,6 @@ const EventDetailModal = ({ show, handleDetailClose, event, handleSave ,position
     const hourWithPeriodOptions = { hour: 'numeric', hour12: true };
   
     const startHour = formatTime(start, hourOptions);
-    console.log("==StartHour",startHour)
     const endHourWithPeriod = formatTime(end, hourWithPeriodOptions);
   
     return `${startHour} - ${endHourWithPeriod}`;

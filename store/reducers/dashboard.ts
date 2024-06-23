@@ -94,13 +94,11 @@ export const userlogin = createAsyncThunkHandler(
   LOGIN_API,
   "login",
   (response:any) => {
-    console.log("==Login===",response)
-    // useRouter().push("/dashboardx/P_M_Todos0");
 
     // Assuming response contains session information such as user data, access token, etc.
     const { access_token, user_email, user_id, refresh_token } = response;
-    // Store user data and access token in cookies
-    localStorage.setItem('access_token',access_token);
+    // // Store user data and access token in cookies
+    // localStorage.setItem('access_token',access_token);
     Cookies.set(
       ACCESS_TOKEN,
       JSON.stringify({ access_token, user_email, user_id, refresh_token })

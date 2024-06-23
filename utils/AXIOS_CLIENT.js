@@ -15,7 +15,6 @@ export const AXIOS_CLIENT = axios.create({
 AXIOS_CLIENT.interceptors.request.use(
   
   (config) => {
-    console.log("Api-->") 
     // const token = localStorage.getItem('access_token');
     // if (token) {
     //   config.headers["Authorization"] = "Bearer " + token;
@@ -51,7 +50,6 @@ AXIOS_CLIENT.interceptors.response.use(
     }
     if (axios.isCancel(error)) {
       // Handle canceled request
-      console.log("Request canceled:", error.message);
     } else {
       // Handle other response errors
       console.error("API call failed:", error);
