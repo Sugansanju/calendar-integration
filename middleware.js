@@ -16,7 +16,8 @@ const Middleware = (req) => {
   if (pathName.toLowerCase() === "/login") {
     console.log("==If===")
     if (cookieData?.value) {
-      return NextResponse.redirect("http://localhost:3000");
+      // return NextResponse.redirect("http://localhost:3000");
+      return NextResponse.redirect("https://calendar-integration-001.vercel.app");
     }
   }
 
@@ -32,12 +33,14 @@ const Middleware = (req) => {
       let parsedEndTime = parseDateString(endTime);
       if (decoded && parsedBeginningTime > parsedEndTime) {
         req.cookies.has(NEXT_TOKEN) && req.cookies.delete(NEXT_TOKEN);
-        return NextResponse.redirect("http://localhost:3000" + "/login");
+        // return NextResponse.redirect("http://localhost:3000" + "/login");
+        return NextResponse.redirect("https://calendar-integration-001.vercel.app" + "/login");
       } else {
         return NextResponse.next();
       }
     } else {
-      return NextResponse.redirect("http://localhost:3000" + "/login");
+      return NextResponse.redirect("https://calendar-integration-001.vercel.app" + "/login");
+      // return NextResponse.redirect("http://localhost:3000" + "/login");
     }
   }
   return NextResponse.next();
