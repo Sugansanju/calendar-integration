@@ -5,8 +5,9 @@ import { parseDateString } from "@/utils";
 
 const Middleware = (req) => {
   let NEXT_TOKEN = process.env.NEXT_PUBLIC_ACCESS_TOKEN;
-  const cookieData = req.cookies.get(NEXT_TOKEN);
-  const pathName = req.nextUrl.pathname;
+  console.log("====",NEXT_TOKEN)
+  // const cookieData = req.cookies.get(NEXT_TOKEN);
+  // const pathName = req.nextUrl.pathname;
   // if (pathName === '/favicon.ico') {
   //   return NextResponse.next();
   // }
