@@ -29,6 +29,7 @@ const Middleware = (req) => {
       let parsedBeginningTime = parseDateString(beginningTime);
       let parsedEndTime = parseDateString(endTime);
       if (decoded && parsedBeginningTime > parsedEndTime) {
+        
         req.cookies.has(NEXT_TOKEN) && req.cookies.delete(NEXT_TOKEN);
         // return NextResponse.redirect("http://localhost:3000" + "/login");
         return NextResponse.redirect("https://calendar-integration-001.vercel.app" + "/login");
